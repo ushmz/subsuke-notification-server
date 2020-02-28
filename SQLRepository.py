@@ -32,9 +32,44 @@ class SQLRepositotry:
             cursor.close()
             self.connection.close()
         
+    def schedulePushNotification(self, token, message, cycle, date):
+        self.connection.ping(reconnect=True)
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(f"insert into pending values('{token}', '{message}', '{cycle}', '{date}');")
+        except Exception as e:
+            print(e)
+            self.connection.rollback()
+        else:
+            self.connection.commit()
+        finally:
+            cursor.close()
+            self.connection.close()
 
-
-
-'''
-そういえば今回春プレ行きますかい？きっぷどうしようか考えてまして．
-'''
+    def collectAllonSchedule(self):
+        self.connection.ping(reconnect=True)
+        cursor = self.connection.cursor()
+        try:
+            # TODO 評価式
+            cursor.execute(f'select * from pending where date = ')
+            result = cursor.fetchall()
+        except Exception as e:
+            print(e)
+            self.connection.rollback()
+        else:
+            return result
+        finally:
+            cursor.close()
+            self.connection.close()
+    
+    def updateSchedule(self, token, date):
+        self.connection.ping(reconnect=True)
+        cursor = self.connection.cursor()
+        try:
+            cursor.execute(f"update pending set date = {date} where token = {token}";)
+        except Exception as e:
+            print(e)
+            self.connection.rollback()
+        finally:
+            cursor.close()
+            self.connection.close()
