@@ -45,7 +45,7 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
-            cursor.execute(f"insert into pending(token, message, cycle, date) values('{token}', '{message}', '{cycle}', '{date}');")
+            cursor.execute(f"insert into pending(token, message, cycle, next) values('{token}', '{message}', '{cycle}', '{date}');")
         except Exception as e:
             print(e)
         else:

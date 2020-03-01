@@ -26,7 +26,8 @@ def registerToken():
     # user = body['user']['username']
     sql.registorUserToken(token=token)
     resp = {
-        'state': 'coding...'
+        'state': 'coding...',
+        'token': token
     }
     return jsonify(resp)
 
