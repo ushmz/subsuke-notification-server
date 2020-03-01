@@ -14,5 +14,5 @@ class NotificationScheduler:
         tasks = sql.collectAllonSchedule()
         service = Service()
         for task in tasks:
-            service.sendPushNotfication(task['token'], task['message'])
+            service.sendPushNotfication(task[0], task[1])
             sql.updateSchedule(task.pending_id)
