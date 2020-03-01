@@ -43,7 +43,7 @@ class SQLRepository:
         # with self.getConnecton as connection:
         
         connection = self.getConnecton()
-        cursor = connection.cursor(cursor_factory=DictCursor)
+        cursor = connection.cursor()
         try:
             cursor.execute(f"insert into pending(token, message, cycle, next) values('{token}', '{message}', '{cycle}', '{date}');")
         except Exception as e:
@@ -57,7 +57,7 @@ class SQLRepository:
     def collectAllonSchedule(self):
         # with self.getConnecton as connection:
         connection = self.getConnecton()        
-        cursor = connection.cursor(cursor_factory=DictCursor)
+        cursor = connection.cursor()
         try:
             # TODO 評価式
             cursor.execute(f'select * from pending where next = current_date;')
