@@ -15,6 +15,10 @@ s = scheduler()
 s.execute()
 
 
+@app.route('/')
+def home():
+    return 'run'
+
 @app.route('/token', methods=['POST'])
 def registerToken():
     body = request.get_json()
