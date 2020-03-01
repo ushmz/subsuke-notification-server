@@ -2,3 +2,5 @@
 .vscode
 *.ini
 *.json
+*.code-workspace
+__pycache__
