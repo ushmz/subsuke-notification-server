@@ -1,10 +1,13 @@
 import configparser
+import os
 import psycopg2 as psql
 from psycopg2.extras import DictCursor # Not Working?
 
 class SQLRepository:
 
     def getConnecton(self):
+        '''
+        This is for local.
         parser = configparser.ConfigParser()
         parser.read("./psql.ini")
         connection = psql.connect(
@@ -14,6 +17,9 @@ class SQLRepository:
             password=parser["sql"]["password"],
             database=parser["sql"]["database"]
         )
+        '''
+        dbn = os.environ.get('DATABASE_URL')
+        connection = psql.connect(dbn)
         return connection
     
     def registorUserToken(self, token, name=None):
