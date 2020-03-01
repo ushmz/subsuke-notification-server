@@ -10,9 +10,6 @@ from SQLRepository import SQLRepository as sql
 
 class Service:
     
-    def __init__(self):
-        super().__init__()
-
     def sendPushNotfication(self, token, message, extra=None):
         try:
             response = PushClient().publish(
@@ -38,5 +35,8 @@ class Service:
 
 
     def registerToken(self, data, files):
-        sql.registerToken(data['token'])
+        if data['user']['username']:
+            sql.registerToken(data['token'], data['user']['username'])
+        else:            
+            sql.registerToken(data['token'])
 
