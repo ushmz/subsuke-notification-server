@@ -11,9 +11,6 @@ app = Flask(__name__)
 
 sql = SQLRepository()
 
-s = scheduler()
-s.execute()
-
 
 @app.route('/')
 def home():
@@ -47,6 +44,10 @@ def addPushNotification():
     }
     return jsonify(resp)
 
+@app.route('/send', methods=['POST'])
+def sendNotification():
+    s = scheduler()
+    s.execute()
 
 if __name__ == '__main__':
     app.run()

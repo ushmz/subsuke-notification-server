@@ -9,7 +9,6 @@ from SQLRepository import SQLRepository
 
 class NotificationScheduler:
     
-
     def execute(self):
         sql = SQLRepository()
         tasks = sql.collectAllonSchedule()
