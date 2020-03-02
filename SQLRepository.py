@@ -25,7 +25,7 @@ class SQLRepository:
     def registorUserToken(self, token, name=None):
         # with self.getConnecton as connection:
         connection = self.getConnecton()
-        cursor = connection.cursor(cursor_factory=DictCursor)
+        cursor = connection.cursor()
         try:
             if name:
                 cursor.execute(f"insert into users(token, name) values('{token}', '{name}');")
@@ -81,7 +81,7 @@ class SQLRepository:
     def updateSchedule(self, pendingId, date):
         # with self.getConnecton as connection:
         connection = self.getConnecton()
-        cursor = connection.cursor(cursor_factory=DictCursor)
+        cursor = connection.cursor()
         try:
             cursor.execute(f'select cycle from pending where pending_id = {pendingId}')
             cycle = cursor.fetchone[0]
