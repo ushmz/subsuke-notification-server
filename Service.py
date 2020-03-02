@@ -11,6 +11,13 @@ from SQLRepository import SQLRepository as sql
 class Service:
     
     def sendPushNotfication(self, token, message, extra=None):
+        '''
+        プッシュ通知を送信する．
+        Args:
+            token(str)      : プッシュトークン
+            message(str)    : 通知本文
+            extra(Object)   : 添付データ
+        '''
         try:
             response = PushClient().publish(
                 PushMessage(to=token, body=message, data=extra)
@@ -34,7 +41,11 @@ class Service:
             raise self.retry(exc=resp)
 
 
+    # Not used.
     def registerToken(self, data, files):
+        '''
+        This method is not used, will be deleted.
+        '''
         if data['user']['username']:
             sql.registerToken(data['token'], data['user']['username'])
         else:            

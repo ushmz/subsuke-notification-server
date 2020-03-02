@@ -31,7 +31,6 @@ def registerToken():
 @app.route('/notification', methods=['POST'])
 def addPushNotification():
     body = request.get_json()
-    print(body)
     token = body['token']['value']
     message = body['notification']['message']
     cycle = body['notification']['cycle']
