@@ -10,7 +10,7 @@ class SQLRepository:
         データベースとのコネクションを取得する．
 
         This is for local.
-        '''
+        
         parser = configparser.ConfigParser()
         parser.read("./psql.ini")
         connection = psql.connect(
@@ -23,7 +23,7 @@ class SQLRepository:
         '''
         dbn = os.environ.get('DATABASE_URL')
         connection = psql.connect(dbn)
-        '''
+        
         return connection
     
     def registorUserToken(self, token, name=None):
