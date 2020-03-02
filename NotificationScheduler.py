@@ -16,4 +16,4 @@ class NotificationScheduler:
         for task in tasks:
             print(task)
             service.sendPushNotfication(task[1], task[2])
-            sql.updateSchedule(task.pending_id)
+            sql.updateSchedule(task[0])
