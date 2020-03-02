@@ -48,6 +48,10 @@ def addPushNotification():
 def sendNotification():
     s = scheduler()
     s.execute()
+    resp = {
+        'state': 'coding...'
+    }
+    return jsonify(resp)
 
 if __name__ == '__main__':
     app.run()

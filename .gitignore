@@ -3,4 +3,6 @@
 *.ini
 *.json
 *.code-workspace
-__pycache__
+*.pyc
+__pycache__/
+
