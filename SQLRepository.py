@@ -50,11 +50,12 @@ class SQLRepository:
             cursor.close()
             connection.close()
         
-    def schedulePushNotification(self, token, message, cycle, date):
+    def schedulePushNotification(self, rowid, token, message, cycle, date):
         '''
         プッシュ通知をDBに保存するメソッド．
 
         Args:
+            pending_id      : ID ( in subsuke = ${rowid} )
             token(str)      : Expoプッシュトークン
             message(str)    : 通知本文
             cycle(str)      : 支払い周期[年|月|週]
@@ -64,7 +65,7 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"insert into pending(token, message, cycle, next) values('{token}', '{message}', '{cycle}', '{date}');")
+            cursor.execute(f"insert into pending(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{date}');")
         except Exception as e:
             print(e)
         else:
@@ -173,6 +174,25 @@ class SQLRepository:
                 cursor.execute(f"update pending set next = next + interval '1 year' where pending_id = {pendingId};")
         except TypeError as te:
             print(te)
+        else:
+            connection.commit()
+        finally:
+            cursor.close()
+            connection.close()
+
+    def cancelScheduling(self, rowid):
+        '''
+        POSTされたIDの通知スケジュールを削除する．
+
+        Args:
+            rowid(int)  : ID
+        '''
+        connection = self.getConnecton()
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f'delete from pendng where pending_id = {rowid}')
+        except Exception as e:
+            print(e)
         else:
             connection.commit()
         finally:

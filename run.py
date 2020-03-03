@@ -31,18 +31,27 @@ def registerToken():
 @app.route('/notification', methods=['POST'])
 def addPushNotification():
     body = request.get_json()
+    rowid = body['notification']['rowid']
     token = body['token']['value']
     message = body['notification']['message']
     cycle = body['notification']['cycle']
     date = body['notification']['date']
 
-    # TODO (?) 変数dateの内容をdatetimeオブジェクトに変換
-    sql.schedulePushNotification(token, message, cycle, date)
+    sql.schedulePushNotification(rowid, token, message, cycle, date)
 
     resp = {
         'state': 'coding...'
     }
     return jsonify(resp)
+
+@app.route('/notification/<int:rowid>', methods=['DELETE'])
+def cancelScheduling(rowid):
+    sql.cancelScheduling(rowid)
+    resp = {
+        'state': 'coding...'
+    }
+    return jsonify(resp)
+
 
 @app.route('/send', methods=['POST'])
 def sendNotification():
@@ -55,3 +64,4 @@ def sendNotification():
 
 if __name__ == '__main__':
     app.run()
+
