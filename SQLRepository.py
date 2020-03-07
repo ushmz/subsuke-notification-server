@@ -64,8 +64,8 @@ class SQLRepository:
         '''
         
         # with self.getConnecton as connection:
-        print(date)
-        d = datetime.datetime.strptime(date, '%Y-%m-%d')
+        # Slice [:10] or split('T')
+        d = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
         d = d - datetime.timedelta(days=3)
         nxt = d.strftime('%Y-%m-%d')
         connection = self.getConnecton()
