@@ -68,7 +68,7 @@ class SQLRepository:
         d = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
         d = d - datetime.timedelta(days=3)
         nxt = d.strftime('%Y-%m-%d')
-
+        
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
@@ -164,4 +164,3 @@ class SQLRepository:
         finally:
             cursor.close()
             connection.close()
-    
