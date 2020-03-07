@@ -156,7 +156,7 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'delete from notifications where pending_id = {rowid} and token = {token}')
+            cursor.execute(f"delete from notifications where pending_id = {rowid} and token = '{token}")
         except Exception as e:
             print(e)
         else:
