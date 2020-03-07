@@ -68,10 +68,11 @@ class SQLRepository:
         d = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
         d = d - datetime.timedelta(days=3)
         nxt = d.strftime('%Y-%m-%d')
+        
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"insert into pending(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
+            cursor.execute(f"insert into notifications(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
         except Exception as e:
             print(e)
         else:
@@ -102,7 +103,7 @@ class SQLRepository:
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
             # TODO 評価式
-            cursor.execute(f'select * from pending where next = current_date;')
+            cursor.execute(f'select * from notifications where next = current_date;')
             results = cursor.fetchall()
             
             rs = []
@@ -117,7 +118,7 @@ class SQLRepository:
             connection.close()
 
     
-    def updateSchedule(self, pendingId):
+    def updateSchedule(self, pendingId, token):
         '''
         支払い周期に応じて次回通知日を更新する．
         
@@ -128,15 +129,15 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'select cycle from pending where pending_id = {pendingId}')
+            cursor.execute(f'select cycle from notifications where pending_id = {pendingId} and token = {token};')
             cycle = cursor.fetchone()[0]
             print(cycle)
             if cycle == '週':
-                cursor.execute(f"update pending set next = next + interval '1 week' where pending_id = {pendingId};")
+                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = {token};")
             elif cycle == '月':
-                cursor.execute(f"update pending set next = next + interval '1 month' where pending_id = {pendingId};")
+                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = {token};")
             elif cycle == '年':
-                cursor.execute(f"update pending set next = next + interval '1 year' where pending_id = {pendingId};")
+                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} ;")
         except TypeError as te:
             print(te)
         else:
@@ -144,5 +145,22 @@ class SQLRepository:
         finally:
             cursor.close()
             connection.close()
-    
 
+    def cancelScheduling(self, rowid, token):
+        '''
+        POSTされたIDの通知スケジュールを削除する．
+
+        Args:
+            rowid(int)  : ID
+        '''
+        connection = self.getConnecton()
+        cursor = connection.cursor()
+        try:
+            cursor.execute(f'delete from notifications where pending_id = {rowid} and token = {token}')
+        except Exception as e:
+            print(e)
+        else:
+            connection.commit()
+        finally:
+            cursor.close()
+            connection.close()
