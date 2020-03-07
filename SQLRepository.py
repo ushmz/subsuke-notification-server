@@ -62,12 +62,12 @@ class SQLRepository:
             cycle(str)      : 支払い周期[年|月|週]
             date(str)       : 次回通知予定日(yyyy-mm-dd)
         '''
-
+        
         # with self.getConnecton as connection:
+        print(date)
         d = datetime.datetime.strptime(date, '%Y-%m-%d')
         d = d - datetime.timedelta(days=3)
         nxt = d.strftime('%Y-%m-%d')
-        
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
@@ -115,6 +115,7 @@ class SQLRepository:
         finally:
             cursor.close()
             connection.close()
+
     
     def updateSchedule(self, pendingId):
         '''
