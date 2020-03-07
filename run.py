@@ -44,9 +44,9 @@ def addPushNotification():
     }
     return jsonify(resp)
 
-@app.route('/notification/<int:rowid>', methods=['DELETE'])
-def cancelScheduling(rowid):
-    sql.cancelScheduling(rowid)
+@app.route('/notification/<int:rowid>/<str:token>', methods=['DELETE'])
+def cancelScheduling(rowid, token):
+    sql.cancelScheduling(rowid, token)
     resp = {
         'state': 'coding...'
     }

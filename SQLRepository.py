@@ -3,6 +3,8 @@ import os
 import psycopg2 as psql
 from psycopg2.extras import DictCursor # Not Working?
 
+import datetime
+
 class SQLRepository:
 
     def getConnecton(self):
@@ -55,17 +57,22 @@ class SQLRepository:
         プッシュ通知をDBに保存するメソッド．
 
         Args:
-            pending_id      : ID ( in subsuke = ${rowid} )
             token(str)      : Expoプッシュトークン
             message(str)    : 通知本文
             cycle(str)      : 支払い周期[年|月|週]
             date(str)       : 次回通知予定日(yyyy-mm-dd)
         '''
+        
         # with self.getConnecton as connection:
+        # Slice [:10] or split('T')
+        d = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
+        d = d - datetime.timedelta(days=3)
+        nxt = d.strftime('%Y-%m-%d')
+
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"insert into pending(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{date}');")
+            cursor.execute(f"insert into notifications(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
         except Exception as e:
             print(e)
         else:
@@ -96,7 +103,7 @@ class SQLRepository:
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
             # TODO 評価式
-            cursor.execute(f'select * from pending where next = current_date;')
+            cursor.execute(f'select * from notifications where next = current_date;')
             results = cursor.fetchall()
             
             rs = []
@@ -110,49 +117,8 @@ class SQLRepository:
             cursor.close()
             connection.close()
 
-
-    @DeprecationWarning
-    def UNUSE_collectAllonSchedule(self):
-        '''
-        結果を辞書形式で取得できないため非推奨
-        一日一回，その日に送信する通知を返却する．
-
-        Returns:
-            result(list)    : 送信する通知情報のオブジェクトのリスト
-        
-            通知情報オブジェクト構造
-            {
-                pending_id(int): ID,
-                token(str): プッシュトークン,
-                message(str): 通知本文,
-                cycle(str): 支払いサイクル[年|月|週],
-                next: 通知予定日(yyyy-mm-dd)
-            }
-        '''
-        # with self.getConnecton as connection:
-        connection = self.getConnecton()        
-        cursor = connection.cursor()
-        try:
-            # TODO 評価式
-            cursor.execute(f'select * from pending where next = current_date;')
-            result = cursor.fetchall()
-            disc = cursor.description
-            rs = []
-            for r in result:
-                column = {}
-                for k, v in zip(disc, r):
-                    column[k.name] = v
-                rs.append(column)
-            print(rs)
-        except Exception as e:
-            print(e)
-        else:
-            return result
-        finally:
-            cursor.close()
-            connection.close()
     
-    def updateSchedule(self, pendingId):
+    def updateSchedule(self, pendingId, token):
         '''
         支払い周期に応じて次回通知日を更新する．
         
@@ -163,15 +129,15 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'select cycle from pending where pending_id = {pendingId}')
+            cursor.execute(f'select cycle from notifications where pending_id = {pendingId} and token = {token};')
             cycle = cursor.fetchone()[0]
             print(cycle)
             if cycle == '週':
-                cursor.execute(f"update pending set next = next + interval '1 week' where pending_id = {pendingId};")
+                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = {token};")
             elif cycle == '月':
-                cursor.execute(f"update pending set next = next + interval '1 month' where pending_id = {pendingId};")
+                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = {token};")
             elif cycle == '年':
-                cursor.execute(f"update pending set next = next + interval '1 year' where pending_id = {pendingId};")
+                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} ;")
         except TypeError as te:
             print(te)
         else:
@@ -180,7 +146,7 @@ class SQLRepository:
             cursor.close()
             connection.close()
 
-    def cancelScheduling(self, rowid):
+    def cancelScheduling(self, rowid, token):
         '''
         POSTされたIDの通知スケジュールを削除する．
 
@@ -190,7 +156,7 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'delete from pendng where pending_id = {rowid}')
+            cursor.execute(f'delete from notifications where pending_id = {rowid} and token = {token}')
         except Exception as e:
             print(e)
         else:
@@ -199,4 +165,3 @@ class SQLRepository:
             cursor.close()
             connection.close()
     
-
