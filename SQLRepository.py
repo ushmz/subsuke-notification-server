@@ -52,7 +52,7 @@ class SQLRepository:
             cursor.close()
             connection.close()
         
-    def schedulePushNotification(self, token, message, cycle, date):
+    def schedulePushNotification(self, rowid, token, message, cycle, date):
         '''
         プッシュ通知をDBに保存するメソッド．
 
@@ -62,6 +62,7 @@ class SQLRepository:
             cycle(str)      : 支払い周期[年|月|週]
             date(str)       : 次回通知予定日(yyyy-mm-dd)
         '''
+
         # with self.getConnecton as connection:
         d = datetime.datetime.strptime(date, '%Y-%m-%d')
         d = d - datetime.timedelta(days=3)
@@ -70,7 +71,7 @@ class SQLRepository:
         connection = self.getConnecton()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"insert into pending(token, message, cycle, next) values('{token}', '{message}', '{cycle}', '{nxt}');")
+            cursor.execute(f"insert into pending(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
         except Exception as e:
             print(e)
         else:
@@ -111,48 +112,6 @@ class SQLRepository:
             print(e)
         else:
             return rs
-        finally:
-            cursor.close()
-            connection.close()
-
-
-    @DeprecationWarning
-    def UNUSE_collectAllonSchedule(self):
-        '''
-        結果を辞書形式で取得できないため非推奨
-        一日一回，その日に送信する通知を返却する．
-
-        Returns:
-            result(list)    : 送信する通知情報のオブジェクトのリスト
-        
-            通知情報オブジェクト構造
-            {
-                pending_id(int): ID,
-                token(str): プッシュトークン,
-                message(str): 通知本文,
-                cycle(str): 支払いサイクル[年|月|週],
-                next: 通知予定日(yyyy-mm-dd)
-            }
-        '''
-        # with self.getConnecton as connection:
-        connection = self.getConnecton()        
-        cursor = connection.cursor()
-        try:
-            # TODO 評価式
-            cursor.execute(f'select * from pending where next = current_date;')
-            result = cursor.fetchall()
-            disc = cursor.description
-            rs = []
-            for r in result:
-                column = {}
-                for k, v in zip(disc, r):
-                    column[k.name] = v
-                rs.append(column)
-            print(rs)
-        except Exception as e:
-            print(e)
-        else:
-            return result
         finally:
             cursor.close()
             connection.close()
