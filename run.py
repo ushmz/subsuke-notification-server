@@ -46,7 +46,7 @@ def addPushNotification():
 
 @app.route('/notification/<string:params>', methods=['DELETE'])
 def cancelScheduling(params):
-    rowid, token = params.split('-')
+    rowid, token = params.split(':')
     sql.cancelScheduling(rowid, token)
     resp = {
         'state': 'coding...'
