@@ -133,9 +133,9 @@ class SQLRepository:
             cycle = cursor.fetchone()[0]
             print(cycle)
             if cycle == '週':
-                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = {token};")
+                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '月':
-                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = {token};")
+                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '年':
                 cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} ;")
         except TypeError as te:
