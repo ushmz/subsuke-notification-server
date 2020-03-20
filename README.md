@@ -65,4 +65,4 @@ def updateSchedule(self, pendingId, token):
 def cancelScheduling(self, rowid, token):
 - POSTされたIDの通知スケジュールを削除する．
 - 多分アプリで削除した時に呼び出される
-- 
+- deleteのSQLを送る
