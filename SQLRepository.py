@@ -7,7 +7,7 @@ import datetime
 
 class SQLRepository:
 
-    def getConnecton(self):
+    def getConnection(self):
         '''
         データベースとのコネクションを取得する．
 
@@ -37,7 +37,7 @@ class SQLRepository:
             name(str)   : ユーザーネーム(optional)
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             if name:
@@ -69,7 +69,7 @@ class SQLRepository:
         d = d - datetime.timedelta(days=3)
         nxt = d.strftime('%Y-%m-%d')
         
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             cursor.execute(f"insert into notifications(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
@@ -99,7 +99,7 @@ class SQLRepository:
             }
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()        
+        connection = self.getConnection()        
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
             # TODO 評価式
@@ -126,7 +126,7 @@ class SQLRepository:
             pendingId(int)  : ID
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             cursor.execute(f'select cycle from notifications where pending_id = {pendingId} and token = {token};')
@@ -153,7 +153,7 @@ class SQLRepository:
         Args:
             rowid(int)  : ID
         '''
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             cursor.execute(f"delete from notifications where pending_id = {rowid} and token = '{token}'")
