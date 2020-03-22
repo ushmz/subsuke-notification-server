@@ -137,7 +137,7 @@ class SQLRepository:
             elif cycle == '月':
                 cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '年':
-                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} ;")
+                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} and token = '{token}';")
         except TypeError as te:
             print(te)
         else:
