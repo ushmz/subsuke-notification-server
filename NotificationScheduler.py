@@ -14,5 +14,9 @@ class NotificationScheduler:
         tasks = sql.collectAllonSchedule()
         service = Service()
         for task in tasks:
-            service.sendPushNotfication(task['token'], task['message'])
-            sql.updateSchedule(task['pending_id'], task['token'])
+            sql.updateSchedule(task['token'], task['pending_id'])
+            updated = sql.getNextNotificationDate(task['token'], task['pending_id'])
+            year, month, date = updated.split('-')
+            service.sendPushNotfication(task['token'], task['message'], {'year': year, 'month': month, 'date': date, 'updated': updated})
+        service.sendPushNotfication('ExponentPushToken[82xhCLLedlQGQwQDTb8rsX]', 'Success.')
+

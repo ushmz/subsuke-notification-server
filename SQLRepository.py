@@ -1,7 +1,7 @@
 import configparser
 import os
 import psycopg2 as psql
-from psycopg2.extras import DictCursor # Not Working?
+from psycopg2.extras import DictCursor
 
 import datetime
 
@@ -26,7 +26,22 @@ class SQLRepository:
         dbn = os.environ.get('DATABASE_URL')
         connection = psql.connect(dbn)
         
+        
         return connection
+
+    def getNextNotificationDate(self, token, rowid):
+        connection = self.getConnection()
+        cursor = connection.cursor(cursor_factory=DictCursor)
+        try:
+            cursor.execute(f"select next from notifications where token = '{token}' and pending_id = {rowid};")
+            result = cursor.fetchall()[0]
+        except TypeError as te:
+            print(te)
+        else:
+            return result
+        finally:
+            cursor.close()
+            connection.close()
     
     def registorUserToken(self, token, name=None):
         '''
@@ -118,7 +133,7 @@ class SQLRepository:
             connection.close()
 
     
-    def updateSchedule(self, pendingId, token):
+    def updateSchedule(self, token, pendingId):
         '''
         支払い周期に応じて次回通知日を更新する．
         
@@ -129,7 +144,7 @@ class SQLRepository:
         connection = self.getConnection()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'select cycle from notifications where pending_id = {pendingId} and token = {token};')
+            cursor.execute(f"select cycle from notifications where pending_id = {pendingId} and token = '{token}';")
             cycle = cursor.fetchone()[0]
             print(cycle)
             if cycle == '週':
