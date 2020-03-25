@@ -1,13 +1,13 @@
 import configparser
 import os
 import psycopg2 as psql
-from psycopg2.extras import DictCursor # Not Working?
+from psycopg2.extras import DictCursor
 
 import datetime
 
 class SQLRepository:
 
-    def getConnecton(self):
+    def getConnection(self):
         '''
         データベースとのコネクションを取得する．
 
@@ -52,7 +52,7 @@ class SQLRepository:
             name(str)   : ユーザーネーム(optional)
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             if name:
@@ -82,7 +82,7 @@ class SQLRepository:
         # Slice [:10] or split('T')
         nxt = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
         
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             cursor.execute(f"insert into notifications(pending_id, token, message, cycle, next) values('{rowid}', '{token}', '{message}', '{cycle}', '{nxt}');")
@@ -112,7 +112,7 @@ class SQLRepository:
             }
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()        
+        connection = self.getConnection()        
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
             # TODO 評価式
@@ -131,7 +131,7 @@ class SQLRepository:
             connection.close()
 
     
-    def updateSchedule(self, pendingId, token):
+    def updateSchedule(self, token, pendingId):
         '''
         支払い周期に応じて次回通知日を更新する．
         
@@ -139,17 +139,17 @@ class SQLRepository:
             pendingId(int)  : ID
         '''
         # with self.getConnecton as connection:
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
-            cursor.execute(f'select cycle from notifications where pending_id = {pendingId} and token = {token};')
+            cursor.execute(f"select cycle from notifications where pending_id = {pendingId} and token = '{token}';")
             cycle = cursor.fetchone()[0]
             if cycle == '週':
                 cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '月':
                 cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '年':
-                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} ;")
+                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} and token = '{token}';")
         except TypeError as te:
             print(te)
         else:
@@ -165,7 +165,7 @@ class SQLRepository:
         Args:
             rowid(int)  : ID
         '''
-        connection = self.getConnecton()
+        connection = self.getConnection()
         cursor = connection.cursor()
         try:
             cursor.execute(f"delete from notifications where pending_id = {rowid} and token = '{token}'")
