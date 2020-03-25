@@ -63,6 +63,14 @@ def sendNotification():
     }
     return jsonify(resp)
 
+@app.route('/test/send', methods=['POST'])
+def sendTestNotification():
+    body = request.get_json()
+    token = body.token
+    message = body.message
+    service = Service()
+    # service.sendPushNotfication('ExponentPushToken[3aGDhnPfT80I2I121sKa7L]', message, body)
+
 if __name__ == '__main__':
-    app.run()
+    app.run(debug=True)
 
