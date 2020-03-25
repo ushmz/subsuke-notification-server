@@ -16,7 +16,7 @@ class NotificationScheduler:
         for task in tasks:
             sql.updateSchedule(task['token'], task['pending_id'])
             updated = sql.getNextNotificationDate(task['token'], task['pending_id'])
-            year, month, date = updated.split('-')
-            service.sendPushNotfication(task['token'], task['message'], {'year': year, 'month': month, 'date': date, 'updated': updated})
-        service.sendPushNotfication('ExponentPushToken[82xhCLLedlQGQwQDTb8rsX]', 'Success.')
-
+            year = updated.year
+            month = updated.month
+            date = updated.day
+            service.sendPushNotfication(task['token'], task['message'], {'year': int(year), 'month': int(month), 'date': int(date), 'rowid': task['pending_id']})

@@ -38,7 +38,7 @@ class SQLRepository:
         except TypeError as te:
             print(te)
         else:
-            return result
+            return result['next']
         finally:
             cursor.close()
             connection.close()
@@ -80,9 +80,7 @@ class SQLRepository:
         
         # with self.getConnecton as connection:
         # Slice [:10] or split('T')
-        d = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
-        d = d - datetime.timedelta(days=3)
-        nxt = d.strftime('%Y-%m-%d')
+        nxt = datetime.datetime.strptime(date[:10], '%Y-%m-%d')
         
         connection = self.getConnection()
         cursor = connection.cursor()
@@ -118,7 +116,7 @@ class SQLRepository:
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
             # TODO 評価式
-            cursor.execute(f'select * from notifications where next = current_date;')
+            cursor.execute(f"select * from notifications where next = current_date + interval '3 days';")
             results = cursor.fetchall()
             
             rs = []
@@ -146,7 +144,6 @@ class SQLRepository:
         try:
             cursor.execute(f"select cycle from notifications where pending_id = {pendingId} and token = '{token}';")
             cycle = cursor.fetchone()[0]
-            print(cycle)
             if cycle == '週':
                 cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = '{token}';")
             elif cycle == '月':
