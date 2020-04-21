@@ -11,8 +11,8 @@ class SQLRepository:
         '''
         データベースとのコネクションを取得する．
 
-        This is for local.
-        
+        Folowing code is for local.
+        '''
         parser = configparser.ConfigParser()
         parser.read("./psql.ini")
         connection = psql.connect(
@@ -25,7 +25,7 @@ class SQLRepository:
         '''
         dbn = os.environ.get('DATABASE_URL')
         connection = psql.connect(dbn)
-        
+        '''
         
         return connection
 
@@ -33,7 +33,7 @@ class SQLRepository:
         connection = self.getConnection()
         cursor = connection.cursor(cursor_factory=DictCursor)
         try:
-            cursor.execute(f"select next from notifications where token = '{token}' and pending_id = {rowid};")
+            cursor.execute(f"select next from notifications where token = '{token}' and pending_id = '{rowid}';")
             result = cursor.fetchall()[0]
         except TypeError as te:
             print(te)
@@ -94,7 +94,6 @@ class SQLRepository:
             cursor.close()
             connection.close()
 
-
     def collectAllonSchedule(self):
         '''
         一日一回，その日に送信する通知を返却する．
@@ -130,7 +129,29 @@ class SQLRepository:
             cursor.close()
             connection.close()
 
-    
+    def updateNotification(self, token, rowid, update):
+        '''
+        POSTされた値に応じて通知を更新する．
+
+        Args:
+            token(str)  :   expoプッシュトークン
+            rowid(int)  :   ユーザー内でタスクを識別するID
+            update(dict):   更新する要素と値のオブジェクト
+        '''
+        connection = self.getConnection()
+        cursor = connection.cursor()
+        try:
+            for key, value in update.items():
+                cursor.execute(f"update notifications set {key} = '{value}' where token = '{token}' and pending_id = '{rowid}';")
+        except Exception as e:
+            print(e)
+        else:
+            connection.commit()
+        finally:
+            cursor.close()
+            connection.close()
+ 
+
     def updateSchedule(self, token, pendingId):
         '''
         支払い周期に応じて次回通知日を更新する．
@@ -142,14 +163,14 @@ class SQLRepository:
         connection = self.getConnection()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"select cycle from notifications where pending_id = {pendingId} and token = '{token}';")
+            cursor.execute(f"select cycle from notifications where pending_id = '{pendingId}' and token = '{token}';")
             cycle = cursor.fetchone()[0]
             if cycle == '週':
-                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = {pendingId} and token = '{token}';")
+                cursor.execute(f"update notification set next = next + interval '1 week' where pending_id = '{pendingId}' and token = '{token}';")
             elif cycle == '月':
-                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = {pendingId} and token = '{token}';")
+                cursor.execute(f"update notifications set next = next + interval '1 month' where pending_id = '{pendingId}' and token = '{token}';")
             elif cycle == '年':
-                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = {pendingId} and token = '{token}';")
+                cursor.execute(f"update notifications set next = next + interval '1 year' where pending_id = '{pendingId}' and token = '{token}';")
         except TypeError as te:
             print(te)
         else:
@@ -168,7 +189,7 @@ class SQLRepository:
         connection = self.getConnection()
         cursor = connection.cursor()
         try:
-            cursor.execute(f"delete from notifications where pending_id = {rowid} and token = '{token}'")
+            cursor.execute(f"delete from notifications where pending_id = '{rowid}' and token = '{token}'")
         except Exception as e:
             print(e)
         else:
