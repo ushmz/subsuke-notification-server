@@ -1,9 +1,4 @@
 # user
-.DS_store
-.vscode
 *.ini
 *.json
-*.code-workspace
-*.pyc
-__pycache__
 
