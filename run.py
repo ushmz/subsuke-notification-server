@@ -18,8 +18,16 @@ def home():
 
 @app.route('/token', methods=['POST'])
 def registerToken():
+    '''
+    {domain}/tokenにPOSTされた場合に，bodyからトークンを取得しデータベースに登録する
+
+    Action:
+        http(POST)
+    Returns:
+        resp(str) : アプリ側に返すレスポンス
+    '''
     body = request.get_json()
-    token = body['token']['value']
+    token = body['pushtoken']
     # user = body['user']['username']
     sql.registorUserToken(token=token)
     resp = {
@@ -32,7 +40,7 @@ def registerToken():
 def addPushNotification():
     body = request.get_json()
     rowid = body['notification']['rowid']
-    token = body['token']['value']
+    token = body['pushtoken']
     message = body['notification']['message']
     cycle = body['notification']['cycle']
     date = body['notification']['date']
@@ -53,6 +61,30 @@ def cancelScheduling(params):
     }
     return jsonify(resp)
 
+@app.route('/notification/upd', methods=['POST'])
+def updateScheduling():
+    body = request.get_json()
+    token = body['pushtoken']
+    rowid = body['notification']['rowid']
+    update = body['update']
+    sql.updateNotification(token, rowid, update)
+    resp = {
+        'state': 'coding...'
+    }
+    return jsonify(resp)
+
+
+@app.route('/notification/upd', methods=['PATCH'])
+def updateScheduling_UNUSE():
+    body = request.get_json()
+    token = body['pushtoken']
+    rowid = body['notification']['rowid']
+    update = body['update']
+    sql.updateNotification(token, rowid, update)
+    resp = {
+        'state': 'coding...'
+    }
+    return jsonify(resp)
 
 @app.route('/send', methods=['POST'])
 def sendNotification():
