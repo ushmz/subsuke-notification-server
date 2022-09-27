@@ -1,6 +1,7 @@
-# Subsuke-Notification-Server
+# Subsuke-Notification-Server(アーカイブ済み)
 
-静岡大学の学生３人でやっているプロジェクト「SUBSUKE」の通知用サーバーのリポジトリ。
+静岡大学の学生３人でやっているプロジェクト「SUBSUKE」の通知用サーバーのリポジトリ。（**アーカイブ済み**）
+開発は[このリポジトリ](https://github.com/ushmz/subsuke)で継続中。
 
 ## 開発環境 (2020/3/5時点)
 - Mac
